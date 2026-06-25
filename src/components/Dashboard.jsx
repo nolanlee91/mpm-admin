@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { listKols } from '../lib/api'
-import { C, btn } from '../theme'
+import { C, btn, card } from '../theme'
 import CreateKol from './CreateKol'
 import KolTable from './KolTable'
 import Commissions from './Commissions'
+
+const usd = (n) => `$${Number(n || 0).toFixed(2)}`
 
 export default function Dashboard({ session }) {
   const [data, setData]       = useState(null)
@@ -22,12 +24,11 @@ export default function Dashboard({ session }) {
 
   const signOut = () => supabase.auth.signOut()
 
-  // Access-denied (signed in, but not on the allowlist) or first-load error.
   if (error && !data) {
     const denied = /forbidden/i.test(error)
     return (
       <Shell email={session.user.email} onSignOut={signOut}>
-        <div style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 20, textAlign: 'center' }}>
+        <div style={{ ...card, textAlign: 'center' }} className="fade-up">
           <div style={{ color: C.red, fontWeight: 700, marginBottom: 8 }}>{denied ? 'Not authorized' : 'Could not load'}</div>
           <div style={{ color: C.muted, fontSize: '0.84rem', lineHeight: 1.6 }}>
             {denied
@@ -40,14 +41,23 @@ export default function Dashboard({ session }) {
     )
   }
 
+  const payouts = data?.payouts || []
+  const stats = {
+    payable: payouts.reduce((s, k) => s + Number(k.payable_now_usd || 0), 0),
+    kols:    payouts.length,
+    revenue: payouts.reduce((s, k) => s + Number(k.revenue_generated_usd || 0), 0),
+    unpaid:  payouts.reduce((s, k) => s + Number(k.unpaid_incl_immature_usd || 0), 0),
+  }
+
   return (
     <Shell email={session.user.email} onSignOut={signOut}>
       {loading && !data
-        ? <div style={{ color: C.muted, padding: 24, textAlign: 'center' }}>Loading…</div>
+        ? <div style={{ color: C.muted, padding: 40, textAlign: 'center' }}>Loading…</div>
         : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
+          <div className="fade-up" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <Stats stats={stats} />
             <CreateKol onCreated={load} />
-            <KolTable payouts={data?.payouts || []} onChange={load} busy={loading} />
+            <KolTable payouts={payouts} onChange={load} busy={loading} />
             <Commissions rows={data?.commissions || []} onChange={load} />
           </div>
         )}
@@ -55,20 +65,45 @@ export default function Dashboard({ session }) {
   )
 }
 
+function Stats({ stats }) {
+  const items = [
+    { label: 'Pay now (matured)', value: usd(stats.payable), accent: C.primary, hint: 'transfer this' },
+    { label: 'Active KOLs',       value: stats.kols,          accent: C.text },
+    { label: 'Revenue generated', value: usd(stats.revenue),  accent: C.blue },
+    { label: 'Unpaid (all)',      value: usd(stats.unpaid),   accent: C.amber },
+  ]
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 12 }}>
+      {items.map((it) => (
+        <div key={it.label} style={{ ...card, padding: '15px 17px' }}>
+          <div style={{ fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: C.muted }}>{it.label}</div>
+          <div style={{ fontSize: '1.55rem', fontWeight: 800, letterSpacing: '-0.02em', marginTop: 7, color: it.accent }}>{it.value}</div>
+          {it.hint && <div style={{ fontSize: '0.64rem', color: C.muted, marginTop: 3 }}>{it.hint}</div>}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function Shell({ email, onSignOut, children }) {
   return (
-    <div style={{ minHeight: '100vh', background: C.bg, color: C.text, fontFamily: "'Inter',sans-serif" }}>
-      <div style={{ maxWidth: 940, margin: '0 auto', padding: '20px 16px 64px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+    <div style={{ minHeight: '100vh', color: C.text }}>
+      <div style={{ maxWidth: 960, margin: '0 auto', padding: '26px 18px 72px' }}>
+        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 22, gap: 16 }}>
           <div>
-            <div style={{ fontSize: '1.3rem', fontWeight: 800, letterSpacing: '-0.02em' }}>📊 KOL Console</div>
-            <div style={{ fontSize: '0.74rem', color: C.muted }}>MicroPoker Master · internal admin</div>
+            <div style={{ fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: 9 }}>
+              <span style={{ fontSize: '1.2rem' }}>♠</span> KOL Console
+            </div>
+            <div style={{ fontSize: '0.74rem', color: C.muted, marginTop: 3 }}>MicroPoker Master · internal admin · not the customer app</div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.72rem', color: C.muted, marginBottom: 6, wordBreak: 'break-all' }}>{email}</div>
-            <button onClick={onSignOut} style={{ ...btn('ghost'), padding: '6px 12px', fontSize: '0.74rem' }}>Sign out</button>
+          <div style={{ textAlign: 'right', flexShrink: 0 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: '0.72rem', color: C.muted, marginBottom: 8, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, padding: '4px 11px' }}>
+              <span style={{ width: 6, height: 6, borderRadius: 4, background: C.primary, boxShadow: `0 0 8px ${C.primary}` }} />
+              <span style={{ wordBreak: 'break-all' }}>{email}</span>
+            </div>
+            <div><button onClick={onSignOut} style={{ ...btn('ghost'), padding: '6px 12px', fontSize: '0.74rem' }}>Sign out</button></div>
           </div>
-        </div>
+        </header>
         {children}
       </div>
     </div>

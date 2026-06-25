@@ -21,7 +21,7 @@ export default function Login() {
 
   return (
     <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', background: C.bg, color: C.text, fontFamily: "'Inter',sans-serif", padding: 16 }}>
-      <form onSubmit={submit} style={{ width: '100%', maxWidth: 340, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 14, padding: '24px 22px' }}>
+      <form onSubmit={submit} className="fade-up" style={{ width: '100%', maxWidth: 340, background: 'linear-gradient(180deg,#171C24,#14181f)', border: `1px solid ${C.border}`, borderRadius: 16, padding: '26px 24px', boxShadow: '0 20px 50px rgba(0,0,0,0.4)' }}>
         <div style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em', marginBottom: 4 }}>🔒 MPM Admin</div>
         <div style={{ fontSize: '0.76rem', color: C.muted, marginBottom: 18 }}>Internal — KOL & payouts. Authorized accounts only.</div>
 

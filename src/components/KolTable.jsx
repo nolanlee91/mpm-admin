@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { markPaid } from '../lib/api'
-import { C, btn } from '../theme'
+import { C, btn, card, accentBar } from '../theme'
 
 const usd = (n) => `$${Number(n || 0).toFixed(2)}`
 
@@ -27,7 +27,10 @@ export default function KolTable({ payouts, onChange, busy }) {
 
   return (
     <section style={card}>
-      <h2 style={h2}>KOLs &amp; payouts</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 4 }}>
+        <span style={accentBar} />
+        <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0 }}>KOLs &amp; payouts</h2>
+      </div>
       <p style={hint}>Pay from <b style={{ color: C.primary }}>Pay&nbsp;now</b> only (matured &gt;30d, unpaid, not reversed). Transfer first, then “Mark paid”.</p>
 
       <div style={{ overflowX: 'auto' }}>
@@ -74,9 +77,7 @@ export default function KolTable({ payouts, onChange, busy }) {
   )
 }
 
-const card = { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }
-const h2 = { fontSize: '0.98rem', fontWeight: 700, margin: '0 0 4px' }
-const hint = { fontSize: '0.74rem', color: C.muted, margin: '0 0 12px', lineHeight: 1.5 }
+const hint = { fontSize: '0.74rem', color: C.muted, margin: '6px 0 14px', lineHeight: 1.5 }
 const table = { width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }
 const th = { fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: C.muted, padding: '8px 10px', borderBottom: `1px solid ${C.border}`, whiteSpace: 'nowrap' }
 const td = { padding: '9px 10px', borderBottom: '1px solid rgba(255,255,255,0.05)', whiteSpace: 'nowrap' }

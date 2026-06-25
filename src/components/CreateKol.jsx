@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createKol } from '../lib/api'
-import { C, btn, input } from '../theme'
+import { C, btn, input, card, accentBar } from '../theme'
 
 const BLANK = { name: '', email: '', code: '', rate: '20', percent: '10', max: '' }
 
@@ -38,7 +38,10 @@ export default function CreateKol({ onCreated }) {
 
   return (
     <section style={card}>
-      <h2 style={h2}>Create KOL</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
+        <span style={accentBar} />
+        <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0 }}>Create KOL</h2>
+      </div>
       <form onSubmit={submit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 12, alignItems: 'end' }}>
         <Field label="Name *"><input style={input} value={f.name} onChange={set('name')} placeholder="Nolan Lee" required /></Field>
         <Field label="Email"><input style={input} type="email" value={f.email} onChange={set('email')} placeholder="nolan@example.com" /></Field>
@@ -70,6 +73,4 @@ function Field({ label, children }) {
   )
 }
 
-const card = { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }
-const h2 = { fontSize: '0.98rem', fontWeight: 700, margin: '0 0 14px' }
 const codeTag = { fontFamily: 'ui-monospace,Menlo,monospace', background: 'rgba(255,255,255,0.08)', padding: '1px 6px', borderRadius: 4 }

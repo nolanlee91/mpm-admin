@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { markReversed } from '../lib/api'
-import { C, btn } from '../theme'
+import { C, btn, card, accentBar } from '../theme'
 
 const cents = (c) => `$${(Number(c || 0) / 100).toFixed(2)}`
 const when  = (iso) => (iso ? String(iso).slice(0, 16).replace('T', ' ') : '—')
@@ -29,7 +29,10 @@ export default function Commissions({ rows, onChange }) {
 
   return (
     <section style={card}>
-      <h2 style={h2}>Recent commissions <span style={{ color: C.muted, fontWeight: 400, fontSize: '0.8rem' }}>(last {rows.length})</span></h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 14 }}>
+        <span style={accentBar} />
+        <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0 }}>Recent commissions <span style={{ color: C.muted, fontWeight: 400, fontSize: '0.8rem' }}>(last {rows.length})</span></h2>
+      </div>
 
       <div style={{ overflowX: 'auto' }}>
         <table style={table}>
@@ -80,8 +83,6 @@ function Pill({ c, bg, children }) {
   return <span style={{ fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.05em', textTransform: 'uppercase', padding: '2px 8px', borderRadius: 20, color: c, background: bg }}>{children}</span>
 }
 
-const card = { background: C.surface, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18 }
-const h2 = { fontSize: '0.98rem', fontWeight: 700, margin: '0 0 12px' }
 const table = { width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }
 const th = { fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: C.muted, padding: '8px 10px', borderBottom: `1px solid ${C.border}`, whiteSpace: 'nowrap' }
 const td = { padding: '9px 10px', borderBottom: '1px solid rgba(255,255,255,0.05)', whiteSpace: 'nowrap' }
