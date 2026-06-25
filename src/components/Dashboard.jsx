@@ -94,7 +94,14 @@ function Shell({ email, onSignOut, children }) {
             <div style={{ fontSize: '1.45rem', fontWeight: 900, letterSpacing: '-0.03em', display: 'flex', alignItems: 'center', gap: 9 }}>
               <span style={{ fontSize: '1.2rem' }}>♠</span> KOL Console
             </div>
-            <div style={{ fontSize: '0.74rem', color: C.muted, marginTop: 3 }}>MicroPoker Master · internal admin · not the customer app</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 7 }}>
+              <span style={{
+                fontSize: '0.6rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase',
+                color: '#1a0a08', background: 'linear-gradient(135deg,#ff9466,#f47067)', padding: '3px 9px', borderRadius: 5,
+                boxShadow: '0 2px 10px rgba(244,112,103,0.35)',
+              }}>● Live · Stripe live · Production DB</span>
+            </div>
+            <div style={{ fontSize: '0.74rem', color: C.muted, marginTop: 6 }}>MicroPoker Master · internal admin · not the customer app</div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, fontSize: '0.72rem', color: C.muted, marginBottom: 8, background: C.surface, border: `1px solid ${C.border}`, borderRadius: 20, padding: '4px 11px' }}>

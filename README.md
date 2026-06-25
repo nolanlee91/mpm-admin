@@ -74,8 +74,11 @@ These tables/views must already exist (run from the app repo's `db/`):
 - `migration-6-pro-grants.sql` → `pro_grants` (for future comp-Pro support)
 
 ## Local dev
-`npm run dev` serves the frontend only — the `/api` functions need Vercel. To test
-the full thing, deploy a Preview, or run `vercel dev` with the env vars set locally.
+`npm run dev` runs the **full app locally** — `vite-dev-api.mjs` is a dev-only Vite
+plugin that serves the `/api` functions and loads non-`VITE_` env from `.env.local`,
+so login → create KOL → tables → payout all work without the Vercel CLI. Copy
+`.env.example` to `.env.local` and fill in real values first. (In production those same
+files run as Vercel serverless functions; the plugin is `apply:'serve'`, dev-only.)
 
 ## What this does NOT do (yet)
 - KOL self-service login (KOLs can't log in — you report their numbers).

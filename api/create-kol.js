@@ -9,6 +9,10 @@ import { requireAdmin, adminDb } from '../lib/adminAuth.js'
 // KOL gets their own promotion CODE pointing at it. The code is the attribution
 // key the app's webhook reads to credit commission.
 const SHARED_COUPON_LOOKUP = 'mpm-kol-yr1'
+// The customer discount is FIXED — all KOLs share ONE Stripe coupon, so it can't be
+// per-KOL. (A per-KOL "discount %" would silently reuse the shared coupon's real
+// value and mislead.) Commission rate IS per-KOL; discount is not.
+const FIXED_DISCOUNT = 10
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -23,13 +27,11 @@ export default async function handler(req, res) {
   const name    = String(b.name || '').trim()
   const email   = b.email ? String(b.email).trim() : null
   const rate    = b.rate    != null ? Number(b.rate)    : 0.20
-  const percent = b.percent != null ? Number(b.percent) : 10
   const maxRed  = b.max     != null ? Number(b.max)     : 0
 
   if (!code || !name) return res.status(400).json({ error: 'Name and code are required.' })
   if (!/^[A-Z0-9]{3,20}$/.test(code)) return res.status(400).json({ error: 'Code must be 3–20 letters/numbers, no spaces.' })
   if (!(rate > 0 && rate <= 0.5)) return res.status(400).json({ error: 'Commission rate must be between 0 and 0.5.' })
-  if (!(percent >= 0 && percent <= 100)) return res.status(400).json({ error: 'Discount percent must be 0–100.' })
 
   const stripe = new Stripe(STRIPE_SECRET_KEY)
   const db = adminDb()
@@ -40,13 +42,16 @@ export default async function handler(req, res) {
     let coupon = existing.data.find((c) => c.metadata?.lookup === SHARED_COUPON_LOOKUP)
     if (!coupon) {
       coupon = await stripe.coupons.create({
-        percent_off: percent,
+        percent_off: FIXED_DISCOUNT,
         duration: 'repeating',
         duration_in_months: 12,
-        name: `MPM KOL — ${percent}% off year 1`,
+        name: `MPM KOL — ${FIXED_DISCOUNT}% off year 1`,
         metadata: { lookup: SHARED_COUPON_LOOKUP },
       })
     }
+    // Always report the coupon's REAL discount (even if it pre-existed), never an
+    // operator-supplied number — so the message can't claim a discount that isn't applied.
+    const percent = coupon.percent_off
 
     // 2. Create this KOL's promotion code pointing at the shared coupon.
     const promo = await stripe.promotionCodes.create({

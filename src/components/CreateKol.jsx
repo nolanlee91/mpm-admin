@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createKol } from '../lib/api'
 import { C, btn, input, card, accentBar } from '../theme'
 
-const BLANK = { name: '', email: '', code: '', rate: '20', percent: '10', max: '' }
+const BLANK = { name: '', email: '', code: '', rate: '20', max: '' }
 
 // Create-KOL form. Replaces `node scripts/create-kol.mjs` with a button: creates the
 // Stripe promo code + the kols row server-side, then shows the code to send the KOL.
@@ -23,7 +23,6 @@ export default function CreateKol({ onCreated }) {
         email: f.email || null,
         code: f.code,
         rate: Number(f.rate) / 100,       // UI is in %, API wants a fraction
-        percent: Number(f.percent),
         max: f.max ? Number(f.max) : 0,
       })
       setOk(res)
@@ -42,12 +41,14 @@ export default function CreateKol({ onCreated }) {
         <span style={accentBar} />
         <h2 style={{ fontSize: '0.98rem', fontWeight: 700, margin: 0 }}>Create KOL</h2>
       </div>
+      <p style={{ fontSize: '0.72rem', color: C.muted, margin: '0 0 14px', lineHeight: 1.5 }}>
+        Customer discount is fixed at <b style={{ color: C.text }}>10%</b> (one shared coupon). Commission % is per-KOL.
+      </p>
       <form onSubmit={submit} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 12, alignItems: 'end' }}>
         <Field label="Name *"><input style={input} value={f.name} onChange={set('name')} placeholder="Nolan Lee" required /></Field>
         <Field label="Email"><input style={input} type="email" value={f.email} onChange={set('email')} placeholder="nolan@example.com" /></Field>
         <Field label="Promo code *"><input style={{ ...input, textTransform: 'uppercase' }} value={f.code} onChange={set('code')} placeholder="NOLAN" required /></Field>
         <Field label="Commission %"><input style={input} type="number" min="0" max="50" value={f.rate} onChange={set('rate')} /></Field>
-        <Field label="Discount %"><input style={input} type="number" min="0" max="100" value={f.percent} onChange={set('percent')} /></Field>
         <Field label="Max uses (0 = ∞)"><input style={input} type="number" min="0" value={f.max} onChange={set('max')} placeholder="0" /></Field>
         <button type="submit" disabled={busy} style={{ ...btn('primary'), opacity: busy ? 0.6 : 1, cursor: busy ? 'not-allowed' : 'pointer' }}>
           {busy ? 'Creating…' : 'Create KOL'}
