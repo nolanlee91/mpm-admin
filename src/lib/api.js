@@ -22,7 +22,8 @@ async function authedFetch(path, opts = {}) {
   return json
 }
 
-export const listKols     = ()              => authedFetch('/api/kols')
+export const listKols      = ()             => authedFetch('/api/kols')
+export const listMarketing = ()             => authedFetch('/api/marketing')
 export const createKol    = (body)          => authedFetch('/api/create-kol', { method: 'POST', body })
 export const markPaid     = (kol_id)        => authedFetch('/api/payout',     { method: 'POST', body: { kol_id } })
 export const markReversed = (invoice)       => authedFetch('/api/reverse',    { method: 'POST', body: { stripe_invoice_id: invoice } })

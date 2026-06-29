@@ -5,6 +5,7 @@ import { C, btn, card } from '../theme'
 import CreateKol from './CreateKol'
 import KolTable from './KolTable'
 import Commissions from './Commissions'
+import Marketing from './Marketing'
 
 const usd = (n) => `$${Number(n || 0).toFixed(2)}`
 
@@ -56,6 +57,7 @@ export default function Dashboard({ session }) {
         : (
           <div className="fade-up" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             <Stats stats={stats} />
+            <Marketing />
             <CreateKol onCreated={load} />
             <KolTable payouts={payouts} onChange={load} busy={loading} />
             <Commissions rows={data?.commissions || []} onChange={load} />
