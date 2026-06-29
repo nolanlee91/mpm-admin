@@ -54,7 +54,7 @@ export default function Marketing() {
               )}
               {rows.map((r) => (
                 <tr key={r.source}>
-                  <td style={td}>{r.source}</td>
+                  <td style={td}>{r.source === '(none)' ? 'direct' : r.source}</td>
                   <td style={{ ...td, textAlign: 'right' }}>{num(r.visitors)}</td>
                   <td style={{ ...td, textAlign: 'right', color: C.muted }}>{num(r.logged_hand)}</td>
                   <td style={{ ...td, textAlign: 'right', fontWeight: 700 }}>{num(r.signups)}</td>
